@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,14 +16,16 @@ namespace API.Controllers
     public class AccountController : BaseApiController
     {
         private readonly DataContext _dataContext;
+        private readonly ITokenService _tokenService;
 
-        public AccountController(DataContext dataContext)
+        public AccountController(DataContext dataContext, ITokenService tokenService)
         {
             _dataContext = dataContext;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AppUser>> Register(RegisterDto newUser)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto newUser)
         {
             if (await UserExists(newUser.Username)) return BadRequest("Username is already taken");
 
@@ -38,11 +41,15 @@ namespace API.Controllers
             _dataContext.Users.Add(user);
             await _dataContext.SaveChangesAsync();
 
-            return user;
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
         }
         
         [HttpPost("login")]
-        public async Task<ActionResult<AppUser>> Login(LoginDto loginInfo)
+        public async Task<ActionResult<UserDto>> Login(LoginDto loginInfo)
         {
             var user = await this._dataContext.Users.SingleOrDefaultAsync(x => x.UserName == loginInfo.Username);
             if (user == null) return Unauthorized("Invalid User");
@@ -56,7 +63,11 @@ namespace API.Controllers
                 return Unauthorized("Invalid User"); ;
             }
 
-            return user;
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
         }
 
         private async Task<bool> UserExists(string username)
