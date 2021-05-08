@@ -60,7 +60,7 @@ namespace API.Controllers
 
             if (!Enumerable.SequenceEqual(computedHash, user.PassswordHash))
             {
-                return Unauthorized("Invalid User"); ;
+                return Unauthorized("Invalid Password"); ;
             }
 
             return new UserDto
