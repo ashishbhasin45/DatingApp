@@ -3,7 +3,8 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
+  HttpErrorResponse
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { NavigationExtras, Router } from '@angular/router';
@@ -17,7 +18,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         if (error){
           switch (error.status) {
             case 400:
@@ -31,11 +32,11 @@ export class ErrorInterceptor implements HttpInterceptor {
                 throw modalStateErrors.flat();
               }
               else{
-                this.toastr.error(error.statusText, error.status);
+                this.toastr.error(error.statusText, error.status.toString());
               }
               break;
               case 401:
-                this.toastr.error(error.statusText, error.status);
+                this.toastr.error(error.statusText, error.status.toString());
                 break;
               case 404:
                 this.router.navigateByUrl('/not-found');
@@ -49,8 +50,9 @@ export class ErrorInterceptor implements HttpInterceptor {
               console.log(error);
               break;
           }
-          return throwError(error);
         }
+
+        throw error;
       })
     );
   }

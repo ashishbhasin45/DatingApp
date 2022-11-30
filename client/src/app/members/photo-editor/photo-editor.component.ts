@@ -14,11 +14,11 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./photo-editor.component.css']
 })
 export class PhotoEditorComponent implements OnInit {
-  @Input() member: Member;
-  uploader: FileUploader;
+  @Input() member?: Member;
+  uploader: FileUploader | undefined;
   hasBaseDropzoneOver = false;
   basUrl = environment.apiUrl;
-  user: User;
+  user?: User | null;
 
   constructor(private accountService: AccountService, private memberService: MembersService) { 
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
@@ -35,7 +35,7 @@ export class PhotoEditorComponent implements OnInit {
   intializeUploader(){
     this.uploader = new FileUploader({
       url: this.basUrl + 'users/add-photo',
-      authToken: 'Bearer ' + this.user.token,
+      authToken: 'Bearer ' + this.user?.token,
       isHTML5: true,
       allowedFileType: ['image'],
       removeAfterUpload: true,
@@ -48,7 +48,7 @@ export class PhotoEditorComponent implements OnInit {
     }
 
     this.uploader.onSuccessItem = (item, response, status, headers) => {
-      if (response){
+      if (response && this.user && this.member){
         const photo :Photo = JSON.parse(response);
         this.member.photos.push(photo);
 
@@ -63,6 +63,7 @@ export class PhotoEditorComponent implements OnInit {
 
   setMainPhoto(photo: Photo) {
     this.memberService.setMainPhoto(photo.id).subscribe(() => {
+      if (this.user && this.member){
       this.user.photoUrl = photo.url;
       this.accountService.setCurrentUser(this.user);
       this.member.photoUrl = photo.url;
@@ -70,12 +71,15 @@ export class PhotoEditorComponent implements OnInit {
         if(element.isMain) element.isMain = false;
         if (element.id == photo.id) photo.isMain = true;
       });
+    }
     });
   }
 
   deletePhoto(photoId: number){
     this.memberService.deletePhoto(photoId).subscribe(() => {
+      if(this.member){
       this.member.photos = this.member.photos.filter(x => x.id !== photoId);
+      }
     })
   }
 }

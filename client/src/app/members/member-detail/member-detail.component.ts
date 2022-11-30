@@ -10,9 +10,9 @@ import { MembersService } from 'src/app/_services/members.service';
   styleUrls: ['./member-detail.component.css']
 })
 export class MemberDetailComponent implements OnInit {
-  member: Member;
-  galleryOptions: NgxGalleryOptions[];
-  galleryImages: NgxGalleryImage[];
+  member?: Member;
+  galleryOptions: NgxGalleryOptions[] = [];
+  galleryImages: NgxGalleryImage[]= [];
   constructor(private memberService: MembersService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
@@ -31,6 +31,7 @@ export class MemberDetailComponent implements OnInit {
 
   getImages(): NgxGalleryImage[] {
     const imageUrls = [];
+    if(this.member){
     for (const photo of this.member.photos){
       imageUrls.push({
         small: photo?.url,
@@ -38,10 +39,11 @@ export class MemberDetailComponent implements OnInit {
         big: photo?.url
       })
     }
+  }
     return imageUrls;
   }
   loadMember(){
-    this.memberService.getMember(this.route.snapshot.paramMap.get('username')).subscribe(
+    this.memberService.getMember(this.route.snapshot.paramMap.get('username') as string).subscribe(
       member => {
         this.member = member;
         this.galleryImages = this.getImages();

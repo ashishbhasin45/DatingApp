@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, FormControl, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, FormControl, UntypedFormGroup, ValidatorFn, Validators, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../_services/account.service';
@@ -11,9 +11,9 @@ import { AccountService } from '../_services/account.service';
 })
 export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter();
-  registerForm: UntypedFormGroup;
-  maxDate: Date;
-  validationErrors: string[];
+  registerForm: FormGroup = new FormGroup({});
+  maxDate?: Date;
+  validationErrors: string[] = [];
 
   constructor(private accountService : AccountService, private toastr : ToastrService, private formBuilder: UntypedFormBuilder, private router: Router) { }
 
@@ -36,15 +36,15 @@ export class RegisterComponent implements OnInit {
         confirmPassword: ['', [Validators.required, this.matchValue('password')]]
       }
     )
-    this.registerForm.controls.password.valueChanges.subscribe(() => {
-      this.registerForm.controls.confirmPassword.updateValueAndValidity();
+    this.registerForm.controls['password'].valueChanges.subscribe(() => {
+      this.registerForm.controls['confirmPassword'].updateValueAndValidity();
     }
     )
   }
 
   matchValue(matchTo: string): ValidatorFn {
     return (control: AbstractControl) => {
-      return control?.value === control?.parent?.controls[matchTo].value 
+      return control?.value === control?.parent?.get(matchTo)?.value 
       ? null : {isNotMatching: true}
     }
   }
