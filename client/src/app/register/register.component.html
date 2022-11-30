@@ -10,15 +10,15 @@
             <input type="radio" value="female" formControlName="gender" class="ms-3 form-check-input"> Female
         </label>
     </div>
-    <app-text-input [formControl]='registerForm.controls["username"]' [label]='"UserName"'></app-text-input>
-    <app-text-input [formControl]='registerForm.controls["knownAs"]' [label]='"Known As"'></app-text-input>
-    <app-date-input [formControl]='registerForm.controls["dateOfBirth"]' [label]='"Date Of Birth"' [maxDate]='maxDate'></app-date-input>
-    <app-text-input [formControl]='registerForm.controls["city"]' [label]='"City"'></app-text-input>
-    <app-text-input [formControl]='registerForm.controls["country"]' [label]='"Country"'></app-text-input>
-    <app-text-input [formControl]='registerForm.controls["password"]' [label]='"Password"' [type]='"password"'></app-text-input>
-    <app-text-input [formControl]='registerForm.controls["confirmPassword"]' [label]='"Confirm Password"' [type]='"password"'></app-text-input>
+    <app-text-input [formControl]='$any(registerForm.controls["username"])' [label]='"UserName"'></app-text-input>
+    <app-text-input [formControl]='$any(registerForm.controls["knownAs"])' [label]='"Known As"'></app-text-input>
+    <app-date-input [formControl]='$any(registerForm.controls["dateOfBirth"])' [label]='"Date Of Birth"' [maxDate]='maxDate'></app-date-input>
+    <app-text-input [formControl]='$any(registerForm.controls["city"])' [label]='"City"'></app-text-input>
+    <app-text-input [formControl]='$any(registerForm.controls["country"])' [label]='"Country"'></app-text-input>
+    <app-text-input [formControl]='$any(registerForm.controls["password"])' [label]='"Password"' [type]='"password"'></app-text-input>
+    <app-text-input [formControl]='$any(registerForm.controls["confirmPassword"])' [label]='"Confirm Password"' [type]='"password"'></app-text-input>
     
-    <div class="row" *ngIf="validationErrors?.length > 0">
+    <div class="row" *ngIf="validationErrors.length > 0">
         <ul class="text-danger">
             <li *ngFor="let error of validationErrors">
                 {{error}}
