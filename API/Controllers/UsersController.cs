@@ -48,7 +48,7 @@ namespace API.Controllers
         {
             var user = await _userRepository.GetUserbyUsernameAsync(User.GetUserName());
             _mapper.Map(memberUpdateDto, user);
-            _userRepository.Update(user);
+            //_userRepository.Update(user);
 
             if (await _userRepository.SaveAllAsync()) return NoContent();
 
@@ -59,8 +59,9 @@ namespace API.Controllers
         public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
         {
             var user = await _userRepository.GetUserbyUsernameAsync(User.GetUserName());
-            var result = await _photoService.AddPhotoAsync(file);
+            if (user == null) return NotFound();
 
+            var result = await _photoService.AddPhotoAsync(file);
             if(result.Error !=  null)
             {
                 return BadRequest(result.Error.Message);
@@ -91,8 +92,10 @@ namespace API.Controllers
         public async Task<ActionResult> SetMainPhoto(int photoId)
         {
             var user = await this._userRepository.GetUserbyUsernameAsync(User.GetUserName());
-            var photo = user.Photos.FirstOrDefault(t => t.Id == photoId);
+            if (user == null) return NotFound();
 
+            var photo = user.Photos.FirstOrDefault(t => t.Id == photoId);
+            if(photo == null) return NotFound();
             if (photo.IsMain) return BadRequest("This is already your main photo");
 
             var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);

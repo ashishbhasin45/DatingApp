@@ -15,7 +15,8 @@ export class RegisterComponent implements OnInit {
   maxDate?: Date;
   validationErrors: string[] = [];
 
-  constructor(private accountService : AccountService, private toastr : ToastrService, private formBuilder: UntypedFormBuilder, private router: Router) { }
+  constructor(private accountService : AccountService, private toastr : ToastrService, 
+    private formBuilder: UntypedFormBuilder, private router: Router) { }
 
   ngOnInit(): void {
     this.intializeForm();
@@ -48,15 +49,28 @@ export class RegisterComponent implements OnInit {
       ? null : {isNotMatching: true}
     }
   }
+
   register() {
-    this.accountService.register(this.registerForm.value).subscribe(resposne => {
+    const dob = this.getDateOnly(this.registerForm.controls['dateOfBirth'].value);
+    const values = {...this.registerForm.value, dateOfBirth: dob};
+    this.accountService.register(this.registerForm.value).subscribe({
+      next: resposne => {
       this.router.navigateByUrl('/members');
-    },error => {
+    }
+    ,error: error => {
       this.validationErrors = error;
-    })
+    }
+  })
   }
 
   cancel() {
     this.cancelRegister.emit(false);
+  }
+
+  private getDateOnly(dob: string | undefined){
+    if (!dob) return;
+    let theDob = new Date(dob);
+    return new Date(theDob.setMinutes(theDob.getMinutes() - theDob.getTimezoneOffset()))
+    .toISOString().slice(0,10)
   }
 }

@@ -36,7 +36,8 @@ namespace API.Services
                     //// here we are transforming the photo, so no matter what aspect ratio the user uploads the photo
                     /// we are converting it to square and focusing on the face using gravity
                     File = new FileDescription(file.FileName, stream),
-                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
+                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
+                    Folder = "datingApp-dotnet7"
                 };
 
                 uploadResult = await _cloudinary.UploadAsync(uploadParams);
