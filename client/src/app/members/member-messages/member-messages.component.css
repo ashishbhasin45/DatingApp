@@ -17,3 +17,15 @@
 .rounded-circle {
     max-height: 50px;
 }
+
+.chat-message{
+    display: flex;
+}
+.chat-img{
+    margin-left: 1.6rem;
+    margin-right: 1.6rem;
+}
+
+.my-message{
+ flex-direction: row-reverse;
+}

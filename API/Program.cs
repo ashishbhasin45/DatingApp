@@ -2,6 +2,7 @@ using API.Data;
 using API.Entities;
 using API.Extensions;
 using API.MiddleWare;
+using API.SignalR;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -92,11 +93,16 @@ app.UseRouting();
 
 app.UseCors(x => x.AllowAnyHeader()
     .AllowAnyMethod()
+    .AllowCredentials()
     .WithOrigins("https://localhost:4200"));
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+//// signalR presence hub
+app.MapHub<PresenceHub>("hubs/presence");
+//// singalR message hub
+app.MapHub<MessageHub>("hubs/messages");
 
 //// db intialization
 using var scope = app.Services.CreateScope();
@@ -107,6 +113,10 @@ try
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
+    //// remove connections from db using a sql query, ef is not used here because if we have thousands
+    /// of rows it will create a problem at the time of application startup, so sql query is faster, 
+    ///hence used here
+    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
     await Seed.SeedUsers(userManager, roleManager);
 
 }
