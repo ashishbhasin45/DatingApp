@@ -58,9 +58,7 @@ namespace API.Data
 
         public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername)
         {
-            var messages = await _dataContext.Messages
-                .Include(u => u.Sender).ThenInclude(p => p.Photos)
-                .Include(u => u.Recipient).ThenInclude(p => p.Photos)
+            var query = _dataContext.Messages
                 .Where(
                     m => m.RecipientUserName == recipientUsername &&
                     m.SenderDeleted == false && m.SenderUserName == currentUsername ||
@@ -68,9 +66,10 @@ namespace API.Data
                     m.SenderUserName == recipientUsername
                 )
                 .OrderBy(m => m.MessageSent)
-                .ToListAsync();
+                .AsQueryable();
+                
 
-            var unreadMessages = messages.Where(m => m.DateRead == null
+            var unreadMessages = query.Where(m => m.DateRead == null
                 && m.RecipientUserName == currentUsername).ToList();
 
             if (unreadMessages.Any())
@@ -79,17 +78,15 @@ namespace API.Data
                 {
                     message.DateRead = DateTime.UtcNow;
                 }
-
-                await _dataContext.SaveChangesAsync();
             }
 
-            return _mapper.Map<IEnumerable<MessageDto>>(messages);
+            return await query.ProjectTo<MessageDto>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _dataContext.SaveChangesAsync() > 0;
-        }
+        //public async Task<bool> SaveAllAsync()
+        //{
+        //    return await _dataContext.SaveChangesAsync() > 0;
+        //}
 
         public void AddGroup(Group group)
         {

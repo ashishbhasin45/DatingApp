@@ -23,6 +23,7 @@ export class NavComponent implements OnInit {
     this.accountService.login(this.model).subscribe(reponse =>{
       this.memberService.resetUserParams();
       this.router.navigateByUrl('/members');
+      this.model = {};
     });
   }
 
