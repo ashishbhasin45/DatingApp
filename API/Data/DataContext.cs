@@ -18,6 +18,7 @@ namespace API.Data
         }
 
         //public DbSet<AppUser> Users { get; set; }
+        public DbSet<Photo> Photos { get; set; }
         public DbSet<UserLike> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Group> Groups { get; set; }
@@ -38,6 +39,9 @@ namespace API.Data
                 .WithOne(u => u.Role)
                 .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
+
+            builder.Entity<Photo>()
+                .HasQueryFilter(p => p.IsApproved == true);
 
             builder.Entity<UserLike>()
                 .HasKey(k => new { k.SourceUserId, k.TargetUserId });

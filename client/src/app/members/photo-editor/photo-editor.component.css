@@ -11,3 +11,25 @@ img.img-thumbnail {
 .input[type=file] {
     color: transparent;
 }
+
+.not-approved {
+    opacity: 0.2;
+}
+
+.img-wrapper {
+position: relative
+}
+
+.img-text {
+position: absolute;
+left: 0;
+right: 0;
+margin-left: auto;
+margin-right: auto;
+bottom: 30%;
+}
+
+.photo-queue{
+    margin-bottom: 40px;
+    padding-left: 7rem;
+}
