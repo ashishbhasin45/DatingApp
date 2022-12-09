@@ -98,11 +98,19 @@ app.UseCors(x => x.AllowAnyHeader()
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+//// this section is only added as we are going to serve our client application 
+///from the same server as the API
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapControllers();
 //// signalR presence hub
 app.MapHub<PresenceHub>("hubs/presence");
 //// singalR message hub
 app.MapHub<MessageHub>("hubs/messages");
+
+app.MapFallbackToController("Index", "Fallback");
 
 //// db intialization
 using var scope = app.Services.CreateScope();
@@ -116,7 +124,8 @@ try
     //// remove connections from db using a sql query, ef is not used here because if we have thousands
     /// of rows it will create a problem at the time of application startup, so sql query is faster, 
     ///hence used here
-    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
+    //await context.Database.ExecuteSqlRawAsync("DELETE FROM \"Connections]");
+    await Seed.ClearConnections(context);
     await Seed.SeedUsers(userManager, roleManager);
 
 }
