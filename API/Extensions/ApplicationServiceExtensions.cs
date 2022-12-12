@@ -21,11 +21,11 @@ namespace API.Extensions
             //// after unit o fwork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-            services.AddDbContext<DataContext>(options =>
-            {
-                //options.UseSqlite(config.GetConnectionString("DefaultConnection"));
-                options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
-            });
+            // services.AddDbContext<DataContext>(options =>
+            // {
+            //     //options.UseSqlite(config.GetConnectionString("DefaultConnection"));
+            //     options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+            // });
             services.AddScoped<LogUserActivity>();
             services.AddSignalR();
             services.AddSingleton<PresenceTracker>();
