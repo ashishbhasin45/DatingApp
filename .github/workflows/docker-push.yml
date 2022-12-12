@@ -31,7 +31,7 @@ jobs:
           tags: ashishbhasin/datingapp:latest
   
   deploy:
-      need: docker
+      needs: docker
       name: Deploy app
       runs-on: ubuntu-latest
       steps:
